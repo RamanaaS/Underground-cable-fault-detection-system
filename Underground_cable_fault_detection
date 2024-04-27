@@ -1,0 +1,102 @@
+(i) MAIN CODE:-
+#include<LiquidCrystal.h>
+LiquidCrystal lcd(13,12,11,10,9,8);
+#define amps A0
+#define r1 4
+#define r2 5
+#define r3 6
+#define r1k A1
+#define r2k A2
+#define y1k A3
+#define y2k A4
+#define b1k 2
+#define b2k 3
+int amps_value = 0;
+int val,val1,val2;
+void setup()
+{
+// put your setup code here, to run once:
+pinMode(amps,INPUT);
+pinMode(r1k,INPUT_PULLUP);
+pinMode(r2k,INPUT_PULLUP);
+pinMode(y1k,INPUT_PULLUP);
+pinMode(y2k,INPUT_PULLUP);
+pinMode(b1k,INPUT_PULLUP);
+pinMode(b2k,INPUT_PULLUP);
+pinMode(r1,OUTPUT);
+pinMode(r2,OUTPUT);
+53
+pinMode(r3,OUTPUT);
+digitalWrite(r1,HIGH);
+digitalWrite(r2,HIGH);
+digitalWrite(r3,HIGH);
+Serial.begin(9600);
+lcd.begin(16,2);
+lcd.setCursor(0,0);
+lcd.print("CABLE IOT");
+delay(1000);
+lcd.clear();
+}
+void loop()
+{
+amps_value = analogRead(amps);
+lcd.setCursor(0,0);lcd.print("I:");
+if(amps_value <= 9){lcd.print("00");lcd.print(amps_value);}
+else if(amps_value <= 99){lcd.print("0");lcd.print(amps_value);}
+else if(amps_value <= 999){lcd.print(amps_value);}
+if(digitalRead(r1k) == HIGH && digitalRead(r2k) ==
+HIGH){lcd.setCursor(8,0);lcd.print("R:OK ");val=0;digitalWrite(r1,HIGH);}
+if(digitalRead(r1k) == LOW){lcd.setCursor(8,0);lcd.print("R:1KM
+");val=10;digitalWrite(r1,LOW);}
+if(digitalRead(r2k) == LOW){lcd.setCursor(8,0);lcd.print("R:2KM
+");val=20;digitalWrite(r1,LOW);}
+if(digitalRead(r1k) == LOW && digitalRead(r2k) ==
+LOW){lcd.setCursor(8,0);lcd.print("R:1,2KM");val=30;digitalWrite(r1,LOW);}
+if(digitalRead(y1k) == HIGH && digitalRead(y2k) ==
+HIGH){lcd.setCursor(0,1);lcd.print("Y:OK
+");val1=0;digitalWrite(r2,HIGH);}
+54
+if(digitalRead(y1k) == LOW){lcd.setCursor(0,1);lcd.print("Y:1KM
+");val1=10;digitalWrite(r2,LOW);}
+if(digitalRead(y2k) == LOW){lcd.setCursor(0,1);lcd.print("Y:2KM
+");val1=20;digitalWrite(r2,LOW);}
+if(digitalRead(y1k) == LOW && digitalRead(y2k) ==
+LOW){lcd.setCursor(0,1);lcd.print("Y:1,2KM");val1=30;digitalWrite(r2,LOW)
+;}
+if(digitalRead(b1k) == HIGH && digitalRead(b2k) ==
+HIGH){lcd.setCursor(8,1);lcd.print("B:OK ");val2=0;digitalWrite(r3,HIGH);}
+if(digitalRead(b1k) == LOW){lcd.setCursor(8,1);lcd.print("B:1KM
+");val2=10;digitalWrite(r3,LOW);}
+if(digitalRead(b2k) == LOW){lcd.setCursor(8,1);lcd.print("B:2KM
+");val2=20;digitalWrite(r3,LOW);}
+if(digitalRead(b1k) == LOW && digitalRead(b2k) ==
+LOW){lcd.setCursor(8,1);lcd.print("B:1,2KM");val2=30;digitalWrite(r3,LOW);
+}
+senddata();
+delay(1000);
+}
+void senddata()
+{
+Serial.print('*');
+Serial.print("AMPS = ");
+if(amps_value <= 9){Serial.print("00");Serial.print(amps_value);}
+else if(amps_value <= 99){Serial.print("0");Serial.print(amps_value);}
+else if(amps_value <= 999){Serial.print(amps_value);}
+Serial.println("mA");
+if(amps_value <= 1){Serial.println("CURRENT FAULT");}
+55
+if(val == 0){Serial.println("R : OK");}
+if(val == 10){Serial.println("R : 1KM FAULT");}
+if(val == 20){Serial.println("R : 2KM FAULT");}
+if(val == 30){Serial.println("R : 1,2 KM FAULT");}
+if(val1 == 0){Serial.println("Y : OK");}
+if(val1 == 10){Serial.println("Y : 1KM FAULT");}
+if(val1 == 20){Serial.println("Y : 2KM FAULT");}
+if(val1 == 30){Serial.println("Y : 1,2 KM FAULT");}
+if(val2 == 0){Serial.println("B : OK");}
+if(val2 == 10){Serial.println("B : 1KM FAULT");}
+if(val2 == 20){Serial.println("B : 2KM FAULT");}
+if(val2 == 30){Serial.println("B : 1,2 KM FAULT");}
+Serial.println('@');
+delay(100);
+}
